@@ -136,19 +136,18 @@ bool readingOriginalFile(string originalFilePath, string &str1){
     // else return true.
 }
 bool creatingCompressedFile(string compressedFileName, string compressionString){
-     // For writing into compressed file : 
+     // For writing into compressed file :
     ofstream fout;
 
-    // Bydefault opening mode of this 👇 is "ios::out" 
-    fout.open(compressedFileName); // File in which we will write compressed code.
+    // Bydefault opening mode of this 👇 is "ios::out"
+    fout.open(compressedFileName, ios::app); // File in which we will write compressed code.
     // If file exist already then it will erase the content of this file and writing will perform. If file doesn't exist then It will create it with the provided name and start writing content in it.
 
-    // fout << "Copressed string" ; // for checking whether it is working or not 
     fout << compressionString;
 
     fout.close(); // Now, file is successfully stored in the hard-disk
 
-    // todo: Think in which case we have to return false 
+    // todo: Think in which case we have to return false
     return true;
 }
 bool creatingCompressedFile(string originalFileName, string compressionString, map<char, string> mp){
@@ -156,66 +155,70 @@ bool creatingCompressedFile(string originalFileName, string compressionString, m
     // manipulation with the originalFileName
     string str = "compressedFile.txt";
     // removing the ".txt" from the name. // we have to replace ".txt" with the str.
-    string compressedFileName = originalFileName.replace(originalFileName.end()-4,originalFileName.end(),str.begin(),str.end()); 
+    string compressedFileName = originalFileName.replace(originalFileName.end()-4,originalFileName.end(),str.begin(),str.end());
     cout << compressedFileName <<endl;
-    
-    if(!creatingCompressedFile(compressedFileName, compressionString)){
-        // something wrong happened 
-            cout << compressedFileName <<endl;
+
+    //todo: Most tricky part :
+    // Before Putting the Compressed output into the compressed file, we also need to put something called "huffman charcater with its code" which helps when we decompressed it by creating an huffman tree. // BUT HOW ???
+
+    // storing map into compressed file
+    ofstream fout;
+
+    // Bydefault opening mode of this 👇 is "ios::out"
+    fout.open(compressedFileName);
+    // If file exist already then it will erase the content of this file and writing will perform. If file doesn't exist then It will create it with the provided name and start writing content in it.
+
+    if(!fout){
+        cout << "File Not Found!"; // give me the correct location of the file.
         return false;
     }else{
-            
-        //todo: Most tricky part :
-        // Before Putting the Compressed output into the compressed file, we also need to put something called "" which helps when we decompressed it by creating an huffman tree. // BUT HOW ???
+        cout << "Now, I will write map! in this compressed File! " <<endl;
 
-        // storing map into compressed file
-        ifstream fin;
-        fin.open(compressedFileName, ios::app); // To append the map into the compressed file
+        // Appending map data to the compressed file
+        // character code
+        // character code
+        // a 101101
+        // b 101011
 
-        if(!fin){
-            cout << "File Not Found!"; // give me the correct location of the file.
+
+        // for (auto [character, str] : mp)
+        // {
+        //     cout << "ASCII CODE : " << int(character) <<"  ---> " << character << ": " << str << endl;
+        //     // cout<<"Hello"<<endl;
+        // }
+
+        string encodingHuffmanTable = "";
+        for(auto [ch, str] : mp){
+            // cout << encodingHuffmanTable << endl;
+            string temp = "";
+
+            // temp.push_back(ch); // But, we want to push ASCII CODE
+            temp.append(to_string(int(ch))); // we are pushing the ascii code of charcter to the string instead of the charcter.
+
+            // todo: Instead of storing ascii code of character i'will store it's binary representation
+
+            temp = temp + " " + str + "\n";
+            // cout << temp;
+            encodingHuffmanTable = encodingHuffmanTable + temp;
+        }
+        encodingHuffmanTable += "\n";
+        cout << encodingHuffmanTable;
+
+       fout << encodingHuffmanTable;
+        fout.close();
+        // cout << "End of the map!!!!!!!!";
+
+        if(!creatingCompressedFile(compressedFileName, compressionString)){
+            // something wrong happened
+            cout << compressedFileName <<endl;
             return false;
         }else{
-            cout << "Now, I will write map! in this compressed File! " <<endl;
-
-            // Appending map data to the compressed file
-            // character code
-            // character code
-            // a 101101
-            // b 101011
-
-
-            // for (auto [character, str] : mp)
-            // {
-            //     cout << "ASCII CODE : " << int(character) <<"  ---> " << character << ": " << str << endl;
-            //     // cout<<"Hello"<<endl;
-            // }
-            
-            string encodingHuffmanTable = "";
-            for(auto [ch, str] : mp){
-                // cout << encodingHuffmanTable << endl;
-                string temp = "";
-
-                // temp.push_back(ch); // But, we want to push ASCII CODE 
-                temp.append(to_string(int(ch))); // we are pushing the ascii code of charcter to the string instead of the charcter.
-                
-                temp = temp + " " + str + "\n";
-                // cout << temp;
-                encodingHuffmanTable = encodingHuffmanTable + temp;
-            }
-            encodingHuffmanTable += "\n";
-            cout << encodingHuffmanTable;
-            // cout << "End of the map!!!!!!!!";  
-
-            // Now, I have to append this "encodingHuffmanTable" string to the first line in the compressed file.
-            // BUT HOW ??
-
-            
-
+            // Successfully compression happened;
+            return true;
         }
-    
-        return true; 
+
     }
+
 }
 
 //==================================================================== Driver Code ==========================================================================================
@@ -456,4 +459,4 @@ int main()
 //   std::cout << str << '\n';
 
 
-// 
+//
