@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include<fstream> // for file handling ( object will be used to take input and give ouput. )
 #include <cstddef> //for NULL
 #define endl "\n"
 using namespace std;
@@ -106,6 +107,36 @@ void traverseHuffmanTree(HuffmanTree *ht, map<char, string> &mp, string str)
         traverseHuffmanTree(ht->getRight(), mp, str + "1");
     }
 }
+// ========================= File reading and writing operation ================================
+bool reading(string filePath, string &str1){
+
+    // File handling to retrieve the content form the "text.txt" file:
+    // Reading File :
+    ifstream fin;
+    fin.open(filePath, ios::in);
+
+    if(!fin){
+        cout << "File Not Found!"; // give me the correct location of the file.
+        return false;
+    }else{
+
+        // storing file content into this "str" variable.
+        while (!fin.eof()) str1.push_back(fin.get()); // instread of fin>>ch;
+
+        fin.close();
+
+        // Below steps is used, so that generated compressed file should decompressed only by my software from where this compressed file is generated. By using the concept of "Cryptography learnt in CNS(Cryptography and Network security)"
+        // str1 = "This file is Compressed by Brijesh's software \n" + str1; // Learn "How to add \n in the string ?"
+
+        return true;
+    }
+    // If file not read successfully or any error coes then return false
+    // else return true.
+}
+
+bool writing(string filePath){
+
+}
 
 //==================================================================== Driver Code ==========================================================================================
 int main()
@@ -118,10 +149,38 @@ int main()
     // HuffmanTree ht2('c', 3, &ht0, &ht1);
     // cout<<ht0<<endl<<ht1<<endl<<ht2;
 
-    string str = "One day people will thankyou that you didnot give up Now";
-    cout << "String Length: " << str.length() << endl;
+    // select any one choice from the given two options:
+    // 1. Do you want to compress the file ?
+    // 2. Do you want to decompress the file ?
+    // after selecting any one option:- please, give me the path of the file. so, that i can retrieve it process the operation.
+
+    // 1. compressing File:
+    // file path ====> Taken from the cin
+    string filePath = "text.txt";
+    string str1;
+    bool readSuccessfully = reading(filePath, str1);
+    // Now, we get the all the content from the file which is stored inside the str1 string variable.
+    if(!readSuccessfully) cout << "Unsuccessfully reading of file";
+    else cout<<"This is the content which is read successfully:-" << endl << str1;
+    // Now just call again for the loop so, it shows an options to select above two options again.
+
+    // else  go for the compression code.
+
+
+
+
+
+
+
+
+
+
+
+
+    // string str1 = "One day people will thankyou that you didnot give up Now";
+    cout << "String Length: " << str1.length() << endl;
     map<char, int> charFrequencyMap;
-    for (auto ch : str)
+    for (auto ch : str1)
         charFrequencyMap[ch]++;
 
     // Printing charcterFrequencyMap
@@ -194,17 +253,17 @@ int main()
 
     for (auto [character, str] : mp)
     {
-        cout << character << ": " << str << endl;
+        cout << "ASCII CODE : " << int(character) <<"  ---> " << character << ": " << str << endl;
         // cout<<"Hello"<<endl;
     }
 
     // Creating Compression code
     string compressionString = "";
-    for (auto character : str)
+    for (auto character : str1)
     {
         compressionString += mp[character];
     }
-    cout << "Original String : " << str << endl;
+    cout << "Original String : " << str1 << endl;
     cout << "Compressed String : " << compressionString << endl;
 
     // Storing compression Detail in compression file to Decompress easily
@@ -302,3 +361,23 @@ int main()
     Refernce -> use dot notation
     //for(auto obj: huffmanTreePq) cout<<obj<<endl; // NOTE:- We can't traverse Priority Queue Like this B'coz:- It's a Heap(Binary Tree)
 */
+
+// https://cplusplus.com/reference/string/string/push_back/
+// std::string str;
+//   std::ifstream file ("test.txt",std::ios::in);
+//   if (file) {
+//     while (!file.eof()) str.push_back(file.get());
+//   }
+//   std::cout << str << '\n';
+
+
+// 
+//  // For writing into compressed file : 
+//     ofstream fout;
+
+//     // Bydefault opening mode of this 👇 is "ios::out" 
+//     fout.open("CompressedFile.txt"); // File in which we will write compressed code.
+//     // If file exist already then it will erase the content of this file and writing will perform. If file doesn't exist then It will create it with the provided name and start writing content in it.
+
+//     fout << "Copressed string" ;
+//     fout.close(); // Now, file is successfully stored in the hard-disk

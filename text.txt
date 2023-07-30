@@ -1,3 +1,3 @@
 Hello I'm Brijesh Rajput. 
 Developer of this File Compression and Decompression Software.
-You can Download it from this given path.
+You can Download this software from the link which is given in the README file.
