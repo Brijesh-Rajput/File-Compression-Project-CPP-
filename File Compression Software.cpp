@@ -222,23 +222,58 @@ bool creatingCompressedFile(string originalFileName, string compressionString, m
 }
 bool readingCompressedFile(string compressedFilePath, string &strForDecompression, map<char, string> &mpForDecompression){
 
-    // ifstream fin;
-    // fin.open(compressedFilePath, ios::in);
-    // if(!fin){
-    //     cout << "File Not Found!"; // give me the correct location of the file.
-    //     return false;
-    // }else{
+    ifstream fin;
+    fin.open(compressedFilePath, ios::in);
+    if(!fin){
+        cout << "File Not Found!"; // give me the correct location of the file.
+        return false;
+    }else{
 
-    //     // todo: Upto where we have to read to build the "strForDecompression" and "mpForDecompression". How do we know ?  Can you just tell me reason ? "How will we separate the map data and actual compressed string ?" //imp: That's the trickiest part 🌟🌟🌟
-    //     // NOTE:- If we will get continuously two times "\n" then we will know that the map data is over and we have to start storing the data into compressed string.
-    //     while (!fin.eof()){
-    //         char ch = fin.get();
-    //         //
-    //     } 
+        // todo: Upto where we have to read to build the "strForDecompression" and "mpForDecompression". How do we know ?  Can you just tell me reason ? "How will we separate the map data and actual compressed string ?" //imp: That's the trickiest part 🌟🌟🌟
+        // NOTE:- If we will get continuously two times "\n" then we will know that the map data is over and we have to start storing the data into compressed string.
+        cout<<endl << "Reading Compressed File execution started!" <<endl;
+        bool decompressionStringStarted = false;
+        string str;
+        while (!fin.eof()){
+            // fin >> sLine;  // But for this space is delimeter and it skips it.
+            getline(fin,str);
+             cout << str << endl;
+            if(str == ""){ // Don't do this ---> str == "\n"
+                // Now, I got the decompressed string
+                cout << "Hey! I called" <<endl;
+                decompressionStringStarted = true;
+                continue; // skipping this
+            }
+            if(decompressionStringStarted){
+                cout << "Hii! Welcome you catch the decompressed string! " << endl;
+                strForDecompression = str;
+            }else{
+                // Brake this given string ===> into character and its huffmanCode
+                // e.g: 108 0100 ===> char ch = ch(108), string str = "0100";
+                cout << str <<endl;
 
-    //     fin.close();
-    //     return true;
-    // }
+                string:: iterator  first_break_it1, second_break_it1;
+                for(auto it = str.begin(); it!=str.end(); it++){
+                    if(*it == ' ') first_break_it1 = it;
+                    if(*it == '\n') second_break_it1 = it;
+                }
+
+                // As substr() takes only integer value only i think. NOT the iterator value
+                string substring1 = str.substr(0,first_break_it1 - str.begin());
+                string substring2 = str.substr(first_break_it1 - str.begin() + 1 , str.end() - str.begin());
+
+                cout<<substring1<<substring2<<endl;
+
+                // Now we have to find the charater from this given ascii code in "substring" and put it into map.
+                char ch = stoi(substring1);
+                cout << ch <<endl;
+                mpForDecompression[ch] = substring2;
+            }
+        }
+
+        fin.close();
+        return true;
+    }
 
 }
 bool creatingDecompressedFile(string compressedFileName, string decompressionString){
@@ -251,9 +286,9 @@ bool creatingDecompressedFile(string compressedFileName, string decompressionStr
 
     ofstream fout;
     fout.open(deCompressedFileName); // If not exist then it will create else it will just overwrite the content
-   
+
    if(!fout){
-        // something wrong happened! 
+        // something wrong happened!
         return false;
    }else{
         cout<< endl << decompressionString << endl;
@@ -398,17 +433,17 @@ int main()
     // Storing compression Detail in compression file to Decompress easily
     // Ascii code --> compression code {for privacy}
 
-    map<char, string> mpForDecompression(mp); // Hardcoded value to check whether compression and decompression works or NOT ?
-    // map<char, string> mpForDecompression;
-    string strForDecompression = compressionString; // Hardcoded value to check whether compression and decompression works or NOT ?
-    // string strForDecompression = "";
+    // map<char, string> mpForDecompression(mp); // Hardcoded value to check whether compression and decompression works or NOT ?
+    map<char, string> mpForDecompression;
+    // string strForDecompression = compressionString; // Hardcoded value to check whether compression and decompression works or NOT ?
+    string strForDecompression = "";
 
     // Reading the content of the Compressed file To decompress it
     string compressedFilePath = "textcompressedFile.txt"; // For now its value is Hardcoded, but it is taken from the user.
     bool readingCompressedFileSuccessfully = readingCompressedFile(compressedFilePath, strForDecompression, mpForDecompression);
     if(!readingCompressedFileSuccessfully) cout << "File Not Found!";
     else{
-        cout << "Read successfully compressed file!";
+        cout << "Read successfully compressed file!"<<endl;
         cout << strForDecompression <<endl;
 
         for (auto [character, str] : mpForDecompression)
@@ -418,7 +453,7 @@ int main()
         }
         cout<<endl;
 
-    } 
+    }
 
 
     for (auto [character, str] : mpForDecompression)
@@ -521,3 +556,14 @@ int main()
 
 
 //
+// ifstream infile;
+// string read_file_name("test.txt");
+// infile.open(read_file_name);=
+// string sLine;
+// while (!infile.eof())
+// {
+//     infile >> sLine;
+//     cout << sLine.data() << endl;
+
+// }
+// infile.close();
