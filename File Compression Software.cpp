@@ -220,7 +220,49 @@ bool creatingCompressedFile(string originalFileName, string compressionString, m
     }
 
 }
+bool readingCompressedFile(string compressedFilePath, string &strForDecompression, map<char, string> &mpForDecompression){
 
+    // ifstream fin;
+    // fin.open(compressedFilePath, ios::in);
+    // if(!fin){
+    //     cout << "File Not Found!"; // give me the correct location of the file.
+    //     return false;
+    // }else{
+
+    //     // todo: Upto where we have to read to build the "strForDecompression" and "mpForDecompression". How do we know ?  Can you just tell me reason ? "How will we separate the map data and actual compressed string ?" //imp: That's the trickiest part 🌟🌟🌟
+    //     // NOTE:- If we will get continuously two times "\n" then we will know that the map data is over and we have to start storing the data into compressed string.
+    //     while (!fin.eof()){
+    //         char ch = fin.get();
+    //         //
+    //     } 
+
+    //     fin.close();
+    //     return true;
+    // }
+
+}
+bool creatingDecompressedFile(string compressedFileName, string decompressionString){
+
+    // manipulation with the originalFileName
+    string str = "DecompressedFile.txt";
+    // removing the ".txt" from the name. // we have to replace ".txt" with the str.
+    string deCompressedFileName = compressedFileName.replace(compressedFileName.end()-4,compressedFileName.end(),str.begin(),str.end());
+    cout << deCompressedFileName <<endl;
+
+    ofstream fout;
+    fout.open(deCompressedFileName); // If not exist then it will create else it will just overwrite the content
+   
+   if(!fout){
+        // something wrong happened! 
+        return false;
+   }else{
+        cout<< endl << decompressionString << endl;
+        fout << decompressionString;
+        fout.close();
+        return true;
+
+   }
+}
 //==================================================================== Driver Code ==========================================================================================
 int main()
 {
@@ -348,22 +390,36 @@ int main()
     if(!writeSuccessfully) cout << "Something Wrong thing happened! ";
     else cout << "Yeah! Successfully decompressed file in the same folder. go and check out that. And also compare the oringinal size of the file with the compressed file. so, you will know that \"How much your memory is saved by My software.\" ";
 
-    // // Reading the content of the Compressed file To decompress it
-    // string compressedFilePath = ""; // For now its value is Hardcoded, but it is taken from the user.
-    // bool readingCompressedFileSuccessfully = readingCompressedFile(compressedFilePath);
-    // if(!readingCompressedFileSuccessfully) cout << "File Not Found!";
-    // else cout << "Read successfully compressed file!";
+
+    // Decompression of file
+    // Creating Tree using Huffman Tree compression code
+    HuffmanTree *htForDecompression = new HuffmanTree('#', 0, NULL, NULL);
 
     // Storing compression Detail in compression file to Decompress easily
     // Ascii code --> compression code {for privacy}
 
-    // Decompression of file
+    map<char, string> mpForDecompression(mp); // Hardcoded value to check whether compression and decompression works or NOT ?
+    // map<char, string> mpForDecompression;
+    string strForDecompression = compressionString; // Hardcoded value to check whether compression and decompression works or NOT ?
+    // string strForDecompression = "";
 
-    // Creating Tree using Huffman Tree compression code
-    HuffmanTree *htForDecompression = new HuffmanTree('#', 0, NULL, NULL);
+    // Reading the content of the Compressed file To decompress it
+    string compressedFilePath = "textcompressedFile.txt"; // For now its value is Hardcoded, but it is taken from the user.
+    bool readingCompressedFileSuccessfully = readingCompressedFile(compressedFilePath, strForDecompression, mpForDecompression);
+    if(!readingCompressedFileSuccessfully) cout << "File Not Found!";
+    else{
+        cout << "Read successfully compressed file!";
+        cout << strForDecompression <<endl;
 
-    map<char, string> mpForDecompression(mp);
-    string strForDecompression = compressionString;
+        for (auto [character, str] : mpForDecompression)
+        {
+            cout << "ASCII CODE : " << int(character) <<"  ---> " << character << ": " << str << endl;
+            // cout<<"Hello"<<endl;
+        }
+        cout<<endl;
+
+    } 
+
 
     for (auto [character, str] : mpForDecompression)
     {
@@ -439,6 +495,11 @@ int main()
             }
         }
     }
+
+    string compressedFileName = "textcompressedFile.txt"; // Hardcoded for now
+    bool writingDecompressedFileSuccessfully = creatingDecompressedFile(compressedFileName, decompressionString);
+    if(!writingDecompressedFileSuccessfully) cout << "Something wrong happened!"<<endl;
+    else cout << "Successfully decompressed file is created!" <<endl;
     cout << "Decompression String is : " << decompressionString << endl;
 }
 
