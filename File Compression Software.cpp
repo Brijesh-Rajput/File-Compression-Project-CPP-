@@ -108,12 +108,12 @@ void traverseHuffmanTree(HuffmanTree *ht, map<char, string> &mp, string str)
     }
 }
 // ========================= File reading and writing operation ================================
-bool reading(string filePath, string &str1){
+bool readingOriginalFile(string originalFilePath, string &str1){
 
     // File handling to retrieve the content form the "text.txt" file:
     // Reading File :
     ifstream fin;
-    fin.open(filePath, ios::in);
+    fin.open(originalFilePath, ios::in);
 
     if(!fin){
         cout << "File Not Found!"; // give me the correct location of the file.
@@ -128,14 +128,94 @@ bool reading(string filePath, string &str1){
         // Below steps is used, so that generated compressed file should decompressed only by my software from where this compressed file is generated. By using the concept of "Cryptography learnt in CNS(Cryptography and Network security)"
         // str1 = "This file is Compressed by Brijesh's software \n" + str1; // Learn "How to add \n in the string ?"
 
+         // We also want to put some string into the compressed file which helps whether this software can decompressed or not. Bcoz: I'm creating software such that it will decompressed or decrypt only that file which is compressed by this software.
+
         return true;
     }
     // If file not read successfully or any error coes then return false
     // else return true.
 }
+bool creatingCompressedFile(string compressedFileName, string compressionString){
+     // For writing into compressed file : 
+    ofstream fout;
 
-bool writing(string filePath){
+    // Bydefault opening mode of this 👇 is "ios::out" 
+    fout.open(compressedFileName); // File in which we will write compressed code.
+    // If file exist already then it will erase the content of this file and writing will perform. If file doesn't exist then It will create it with the provided name and start writing content in it.
 
+    // fout << "Copressed string" ; // for checking whether it is working or not 
+    fout << compressionString;
+
+    fout.close(); // Now, file is successfully stored in the hard-disk
+
+    // todo: Think in which case we have to return false 
+    return true;
+}
+bool creatingCompressedFile(string originalFileName, string compressionString, map<char, string> mp){
+
+    // manipulation with the originalFileName
+    string str = "compressedFile.txt";
+    // removing the ".txt" from the name. // we have to replace ".txt" with the str.
+    string compressedFileName = originalFileName.replace(originalFileName.end()-4,originalFileName.end(),str.begin(),str.end()); 
+    cout << compressedFileName <<endl;
+    
+    if(!creatingCompressedFile(compressedFileName, compressionString)){
+        // something wrong happened 
+            cout << compressedFileName <<endl;
+        return false;
+    }else{
+            
+        //todo: Most tricky part :
+        // Before Putting the Compressed output into the compressed file, we also need to put something called "" which helps when we decompressed it by creating an huffman tree. // BUT HOW ???
+
+        // storing map into compressed file
+        ifstream fin;
+        fin.open(compressedFileName, ios::app); // To append the map into the compressed file
+
+        if(!fin){
+            cout << "File Not Found!"; // give me the correct location of the file.
+            return false;
+        }else{
+            cout << "Now, I will write map! in this compressed File! " <<endl;
+
+            // Appending map data to the compressed file
+            // character code
+            // character code
+            // a 101101
+            // b 101011
+
+
+            // for (auto [character, str] : mp)
+            // {
+            //     cout << "ASCII CODE : " << int(character) <<"  ---> " << character << ": " << str << endl;
+            //     // cout<<"Hello"<<endl;
+            // }
+            
+            string encodingHuffmanTable = "";
+            for(auto [ch, str] : mp){
+                // cout << encodingHuffmanTable << endl;
+                string temp = "";
+
+                // temp.push_back(ch); // But, we want to push ASCII CODE 
+                temp.append(to_string(int(ch))); // we are pushing the ascii code of charcter to the string instead of the charcter.
+                
+                temp = temp + " " + str + "\n";
+                // cout << temp;
+                encodingHuffmanTable = encodingHuffmanTable + temp;
+            }
+            encodingHuffmanTable += "\n";
+            cout << encodingHuffmanTable;
+            // cout << "End of the map!!!!!!!!";  
+
+            // Now, I have to append this "encodingHuffmanTable" string to the first line in the compressed file.
+            // BUT HOW ??
+
+            
+
+        }
+    
+        return true; 
+    }
 }
 
 //==================================================================== Driver Code ==========================================================================================
@@ -156,23 +236,15 @@ int main()
 
     // 1. compressing File:
     // file path ====> Taken from the cin
-    string filePath = "text.txt";
-    string str1;
-    bool readSuccessfully = reading(filePath, str1);
+    string originalFilePath = "text.txt"; // Hardcoded for now.
+    string str1 = "";
+    bool readSuccessfully = readingOriginalFile(originalFilePath, str1);
     // Now, we get the all the content from the file which is stored inside the str1 string variable.
     if(!readSuccessfully) cout << "Unsuccessfully reading of file";
     else cout<<"This is the content which is read successfully:-" << endl << str1;
     // Now just call again for the loop so, it shows an options to select above two options again.
 
     // else  go for the compression code.
-
-
-
-
-
-
-
-
 
 
 
@@ -265,6 +337,19 @@ int main()
     }
     cout << "Original String : " << str1 << endl;
     cout << "Compressed String : " << compressionString << endl;
+
+    // Creating Decompressed File so that, we can put all the decompressed code into that
+    // But Note that: We also have to pass something into the creatingCompressedFile which helped us to create the huffman-tree so, we can decompress the code easily.
+    string originalFileName = "text.txt"; // Hardcoded for now
+    bool writeSuccessfully = creatingCompressedFile(originalFileName, compressionString, mp);
+    if(!writeSuccessfully) cout << "Something Wrong thing happened! ";
+    else cout << "Yeah! Successfully decompressed file in the same folder. go and check out that. And also compare the oringinal size of the file with the compressed file. so, you will know that \"How much your memory is saved by My software.\" ";
+
+    // // Reading the content of the Compressed file To decompress it
+    // string compressedFilePath = ""; // For now its value is Hardcoded, but it is taken from the user.
+    // bool readingCompressedFileSuccessfully = readingCompressedFile(compressedFilePath);
+    // if(!readingCompressedFileSuccessfully) cout << "File Not Found!";
+    // else cout << "Read successfully compressed file!";
 
     // Storing compression Detail in compression file to Decompress easily
     // Ascii code --> compression code {for privacy}
@@ -372,12 +457,3 @@ int main()
 
 
 // 
-//  // For writing into compressed file : 
-//     ofstream fout;
-
-//     // Bydefault opening mode of this 👇 is "ios::out" 
-//     fout.open("CompressedFile.txt"); // File in which we will write compressed code.
-//     // If file exist already then it will erase the content of this file and writing will perform. If file doesn't exist then It will create it with the provided name and start writing content in it.
-
-//     fout << "Copressed string" ;
-//     fout.close(); // Now, file is successfully stored in the hard-disk
